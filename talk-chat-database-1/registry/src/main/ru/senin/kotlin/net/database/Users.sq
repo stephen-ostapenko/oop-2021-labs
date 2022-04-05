@@ -1,0 +1,72 @@
+CREATE TABLE users (
+    name TEXT NOT NULL UNIQUE PRIMARY KEY,
+    protocol TEXT NOT NULL,
+    host TEXT NOT NULL,
+    port INTEGER NOT NULL,
+    existsRightNow INTEGER,
+    failedChecks INTEGER
+);
+
+selectAll:
+SELECT *
+FROM users
+WHERE existsRightNow != 0;
+
+selectUsersForMap:
+SELECT name, protocol, host, port
+FROM users
+WHERE existsRightNow != 0;
+
+selectByName:
+SELECT *
+FROM users
+WHERE name = ? AND existsRightNow != 0;
+
+hasEverExisted:
+SELECT *
+FROM users
+WHERE name = ?;
+
+selectAllFailed:
+SELECT *
+FROM users
+WHERE failedChecks >= ?;
+
+insert:
+INSERT INTO users(name, protocol, host, port, existsRightNow, failedChecks)
+VALUES (?, ?, ?, ?, 1, 0);
+
+insertFullUserObject:
+INSERT INTO users(name, protocol, host, port, existsRightNow, failedChecks)
+VALUES (?, ?, ?, ?, ?, ?);
+
+updateUserExistence:
+UPDATE users
+SET existsRightNow = 1
+WHERE name = ?;
+
+updateUserAddress:
+UPDATE users
+SET protocol = ?,
+    host = ?,
+    port = ?
+WHERE name = ?;
+
+deleteUser:
+UPDATE users
+SET existsRightNow = 0,
+    failedChecks = 0
+WHERE name = ?;
+
+increaseFailedChecks:
+UPDATE users
+SET failedChecks = failedChecks + 1
+WHERE name = ?;
+
+resetFailedChecks:
+UPDATE users
+SET failedChecks = 0
+WHERE name = ?;
+
+clearDatabase:
+DELETE FROM users;
